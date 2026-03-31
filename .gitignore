@@ -1,2 +1,3 @@
 # Ignore compiled PDFs
 *.pdf
+.DS_Store

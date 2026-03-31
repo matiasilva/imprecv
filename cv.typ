@@ -14,7 +14,7 @@
 
     set par(
         leading: uservars.linespacing,
-        justify: true,
+        justify: false,
     )
 
     doc
@@ -118,7 +118,7 @@
     ]
 }
 
-#let cvwork(info, title: "Work Experience", isbreakable: true) = {
+#let cvwork(info, title: "Professional Experience", isbreakable: true) = {
     if ("work" in info) and (info.work != none) {block[
         == #title
         #for w in info.work {
@@ -231,12 +231,12 @@
             block(width: 100%, breakable: isbreakable)[
                 // Line 1: Project Name
                 #if ("url" in project) and (project.url != none) [
-                    *#link(project.url)[#project.name]* \
+                    *#link(project.url)[#project.name]* #h(1fr) #utils.daterange(start, end) \
                 ] else [
                     *#project.name* \
                 ]
                 // Line 2: Organization and Date
-                #text(style: "italic")[#project.affiliation]  #h(1fr) #utils.daterange(start, end) \
+                // #text(style: "italic")[#project.affiliation]  #h(1fr) #utils.daterange(start, end) \
                 // Summary or Description
                 #for hi in project.highlights [
                     - #eval(hi, mode: "markup")
