@@ -9,8 +9,14 @@
   )
 
   set list(
-    spacing: uservars.linespacing,
+    spacing: uservars.listspacing,
   )
+
+  // Keep wrapped list items compact without changing the leading of normal text.
+  show list: it => {
+    set par(leading: uservars.listleading)
+    it
+  }
 
   set par(
     leading: uservars.linespacing,
@@ -260,7 +266,7 @@
   }
 }
 
-#let cvawards(info, title: "Honors and Awards", isbreakable: true) = {
+#let cvawards(info, title: "Honours and Awards", isbreakable: true) = {
   if ("awards" in info) and (info.awards != none) {
     block[
       == #title
