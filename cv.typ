@@ -31,7 +31,7 @@
   // Uppercase section headings
   show heading.where(
     level: 2,
-  ): it => block(width: 100%)[
+  ): it => block(width: 100%, sticky: true)[
     #v(uservars.sectionspacing)
     #set align(left)
     #set text(font: uservars.headingfont, size: 1em, weight: "bold")
@@ -126,9 +126,17 @@
   ]
 }
 
+// Running footer: name and page count on every page. Keeps the default
+// page-number styling. Pass to `set page(footer: cvrunningfooter(cvdata))`.
+#let cvrunningfooter(info, numbering: "1 / 1") = context {
+  let pagenumber = counter(page).display(numbering, both: true)
+  set align(center)
+  [#info.personal.name #sym.space.en #sym.dot.c #sym.space.en #pagenumber]
+}
+
 #let cvwork(info, title: "Professional Experience", isbreakable: true) = {
   if ("work" in info) and (info.work != none) {
-    block[
+    block(breakable: isbreakable)[
       == #title
       #for w in info.work {
         block(width: 100%, breakable: isbreakable)[
@@ -164,7 +172,7 @@
 
 #let cveducation(info, title: "Education", isbreakable: true) = {
   if ("education" in info) and (info.education != none) {
-    block[
+    block(breakable: isbreakable)[
       == #title
       #for edu in info.education {
         let start = utils.strpdate(edu.startDate)
@@ -208,7 +216,7 @@
 
 #let cvaffiliations(info, title: "Leadership and Activities", isbreakable: true) = {
   if ("affiliations" in info) and (info.affiliations != none) {
-    block[
+    block(breakable: isbreakable)[
       == #title
       #for org in info.affiliations {
         // Parse ISO date strings into datetime objects
@@ -240,7 +248,7 @@
 
 #let cvprojects(info, title: "Projects", isbreakable: true) = {
   if ("projects" in info) and (info.projects != none) {
-    block[
+    block(breakable: isbreakable)[
       == #title
       #for project in info.projects {
         // Parse ISO date strings into datetime objects
@@ -268,7 +276,7 @@
 
 #let cvawards(info, title: "Honours and Awards", isbreakable: true) = {
   if ("awards" in info) and (info.awards != none) {
-    block[
+    block(breakable: isbreakable)[
       == #title
       #for award in info.awards {
         // Parse ISO date strings into datetime objects
@@ -297,7 +305,7 @@
 
 #let cvcertificates(info, title: "Licenses and Certifications", isbreakable: true) = {
   if ("certificates" in info) and (info.certificates != none) {
-    block[
+    block(breakable: isbreakable)[
       == #title
 
       #for cert in info.certificates {
@@ -325,7 +333,7 @@
 
 #let cvpublications(info, title: "Research and Publications", isbreakable: true) = {
   if ("publications" in info) and (info.publications != none) {
-    block[
+    block(breakable: isbreakable)[
       == #title
       #for pub in info.publications {
         // Parse ISO date strings into datetime objects
@@ -378,7 +386,7 @@
 
 #let cvreferences(info, title: "References", isbreakable: true) = {
   if ("references" in info) and (info.references != none) {
-    block[
+    block(breakable: isbreakable)[
       == #title
       #for ref in info.references {
         block(width: 100%, breakable: isbreakable)[
