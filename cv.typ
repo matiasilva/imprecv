@@ -46,14 +46,13 @@
   // Name title/heading
   show heading.where(
     level: 1,
-  ): it => block(width: 100%)[
+  ): it => block(width: 100%, below: 1.1em)[
     #set text(font: uservars.headingfont, size: 1.5em, weight: "bold")
     #if (uservars.at("headingsmallcaps", default: false)) {
       smallcaps(it.body)
     } else {
       upper(it.body)
     }
-    #v(2pt)
   ]
 
   doc
@@ -103,6 +102,12 @@
     },
   ).filter(it => it != none) // Filter out none elements from the profile array
 
+  // Location leads the contact line rather than taking a line of its own
+  #if ("location" in info.personal and info.personal.location != none) and uservars.showAddress {
+    let address = info.personal.location.pairs().filter(it => it.at(1) != none and str(it.at(1)) != "")
+    profiles.insert(0, box(address.map(it => str(it.at(1))).join(", ")))
+  }
+
   #if ("profiles" in info.personal) and (info.personal.profiles.len() > 0) {
     for profile in info.personal.profiles {
       profiles.push(
@@ -111,7 +116,7 @@
     }
   }
 
-  #set text(font: uservars.bodyfont, weight: "medium", size: uservars.fontsize * 1)
+  #set text(font: uservars.bodyfont, weight: uservars.bodyweight, size: uservars.fontsize * 0.95)
   #pad(x: 0em)[
     #profiles.join([#sym.space.en #sym.diamond.filled #sym.space.en])
   ]
@@ -121,9 +126,10 @@
   align(center)[
     = #info.personal.name
     #jobtitletext(info, uservars)
-    #addresstext(info, uservars)
     #contacttext(info, uservars)
   ]
+  // Set the header apart from the body: more room than between sections
+  v(0.8em)
 }
 
 // Running footer: name and page count on every page. Keeps the default
@@ -138,7 +144,9 @@
   if ("work" in info) and (info.work != none) {
     block(breakable: isbreakable)[
       == #title
-      #for w in info.work {
+      #for (i, w) in info.work.enumerate() {
+        // employers sit further apart than positions so roles group visually
+        if i != 0 { v(0.3em) }
         block(width: 100%, breakable: isbreakable)[
           // Line 1: Company and Location
           #if ("url" in w) and (w.url != none) [
@@ -150,7 +158,7 @@
         // Create a block layout for each work entry
         let index = 0
         for p in w.positions {
-          if index != 0 { v(0.6em) }
+          if index != 0 { v(0.5em) }
           block(width: 100%, breakable: isbreakable, above: 0.6em)[
             // Parse ISO date strings into datetime objects
             #let start = utils.strpdate(p.startDate)
@@ -283,14 +291,12 @@
         let date = utils.strpdate(award.date)
         // Create a block layout for each award entry
         block(width: 100%, breakable: isbreakable)[
-          // Line 1: Award Title and Location
+          // Line 1: Award Title, Issuer and Date
           #if ("url" in award) and (award.url != none) [
-            *#link(award.url)[#award.title]* #h(1fr) *#award.location* \
+            *#link(award.url)[#award.title]*, #text(style: "italic")[#award.issuer] #h(1fr) #date \
           ] else [
-            *#award.title* #h(1fr) *#award.location* \
+            *#award.title*, #text(style: "italic")[#award.issuer] #h(1fr) #date \
           ]
-          // Line 2: Issuer and Date
-          Issued by #text(style: "italic")[#award.issuer]  #h(1fr) #date \
           // Summary or Description
           #if ("highlights" in award) and (award.highlights != none) {
             for hi in award.highlights [
@@ -365,17 +371,17 @@
   ) {
     block(breakable: isbreakable)[
       == #title
+      #if ("skills" in info) and (info.skills != none) [
+        #for group in info.skills [
+          - *#group.category*: #group.skills.join(", ")
+        ]
+      ]
       #if ("languages" in info) and (info.languages != none) [
         #let langs = ()
         #for lang in info.languages {
           langs.push([#lang.language (#lang.fluency)])
         }
         - *Languages*: #langs.join(", ")
-      ]
-      #if ("skills" in info) and (info.skills != none) [
-        #for group in info.skills [
-          - *#group.category*: #group.skills.join(", ")
-        ]
       ]
       #if ("interests" in info) and (info.interests != none) [
         - *Interests*: #info.interests.join(", ")
